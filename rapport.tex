@@ -1,0 +1,92 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{indentfirst}
+\usepackage{setspace}
+\onehalfspacing
+
+\title{Rapport du TP2 - IFT 2035}
+\author{Martin Medina et Étienne Mitchell-Bouchard}
+\date{12 décembre 2023}
+
+\begin{document}
+\maketitle
+
+% INTRO
+
+\section{\underline{Introduction}}
+
+\subsection{Comment avons-nous effectué le devoir ?}
+
+Nous avons effectué la totalité du devoir en "\textit{pair programming}". Par rapport au déroulement, on a commencé par lire et comprendre tout le code qui était déjà fournis. Puis, on a décidé de compléter fonction par fonction. Nous avons commencé par tout d'abord implémenter \textit{Ltype} dans \textit{s2l} pour ensuite compléter les fonctions \textit{check} et \textit{synth}. Nous avons terminé en modifiant \textit{s2l} pour implémenter le Sucre Syntaxique. On a trouvé que c'était une bonne façon d'affronter le devoir et, de plus, cette manière de travailler nous a permis de rester organisé et de tester notre code plus facilement une fois nos fonctions implémentées. De plus, nous avons fait des modifications à \textit{exemples.slip} au fur et à mesure qu'on a avancé dans l'implémentation des fonctions pour faire des tests. Ensuite, nous avons fait les tests (\textit{tests.slips}) et nous avons terminé avec la rédaction du rapport. Le rapport à été réalisé sur \textit{Overleaf} pour pouvoir le modifier en même temps à distance. 
+
+\subsection{Commentaires généraux}
+
+En général, on peut dire que c'est un devoir assez compliqué, mais considérablement plus facile que le TP 1. Cela pourrait être dû au fait que le TP 1 nous a beaucoup aidé à comprendre le code fourni, donc cela nous a évité de passer des heures à lire le code pour le comprendre (comme ça avait été le cas dans le TP 1). Il y avait beaucoup d'instances où comprendre une implémentation nous as permis de l'appliquer à plusieurs autres endroits, ce qui nous a permis d'avancer assez rapidement. Au final, nous sommes satisfait de ce devoir puisque nous avons réussi à implémenter toutes les exigences de l'énoncé.
+
+% S2L
+
+\section{\underline{Ajouts à s2l (Ltype et Sucre syntaxique)}}
+
+\subsection{Première étape : Compréhension}
+
+La première étape était de comprendre la nouvelle syntaxe typé de Slip et comment écrire les déclarations de types. Une fois cela fait, on devait comprendre l'écriture du sucre syntaxique, en particulier comment décomposer les nouvelles règles en \textit{Snodes}. Ayant déjà fait cela dans le premier TP, on a simplement utiliser la fonction \textit{sexpOf} pour comprendre la décomposition des énoncés demandés. Il a ensuite fallu changer les cas de \textit{s2l} affecté par le sucre syntaxique et bien sûr implémenter le nouveau \textit{Lexp}:  \textit{Ltype Lexp Type}. Pour simplifier la compréhension, voici les règles de sucre syntaxique que nous devions implémenter associé à un numéro: Les règles de 1 à 6 sont ceux en ordres dans la liste 2.1 de l'énoncé. La règle 7 est celle qui implique la déclarations de lambdas dans les \textit{letrecs}. La règle 1 étant déjà implémenté par Haskell, elle ne sera pas mentionné ni dans le code ni dans le rapport.
+ 
+\subsection{Deuxième étape : Code}
+
+\begin{itemize}
+    \item \textbf{Ltype} : Le plus difficile était de comprendre comment transformer les \textit{Ssym} que nous avions en types concrets. En utilisant la fonction \textit{s2t}, nous avons pu facilement faire les types simples (\textit{Tint}, \textit{Tbool} et \textit{Tref}). \textit{Tabs} était cependant beaucoup plus complexe et ce n'est qu'après avoir quasiment terminé \textit{synth} et \textit{check} que nous l'avons implémenté. Grâce à une deuxième fonction \textit{s2tf}, nous avons pu réussir à construire des types abstraits en faisant bien attention à la structure des \textit{Snodes}.
+    \item \textbf{begin (Règle 2)} : La plus grande difficulté était de gérer une liste de \textit{Sexp}, mais grâce à une fonction auxiliaire bien implémenté ce cas ne nous a pris que très peu de temps. C'était cependant le cas le plus important car il est utilisé pour plusieurs autres règles de sucre syntaxique.
+    \item \textbf{Labs (Règles 3 et 4)} : Le plus complexe était la règle 3, car elle requiert de créer une nouvelle lambda pour chaque argument. Nous l'avons implémenté grâce à la fonction auxilaire \textit{s2args} qui crée un nouveau \textit{Labs} pour chaque nouvel argument. Pour ce qui est de la règle 4, il suffit de créer un \textit{Snode} avec \textit{begin} pour effectuer toutes les instructions requises.
+    \item \textbf{let (Règle 5)} : Une fois avoir compris le fonctionnement de \textit{begin}, ce cas était relativement simple: il suffisait d'isoler le nom de la variable et son expression et d'ensuite créer un \textit{Snode} avec \textit{begin} pour les expressions restantes. La difficulté étaient dans la division du tableau de \textit{Sexp} du \textit{Snode} initial.
+    \item \textbf{letrec (Règle 6 et 7)} : La règle 6 était facile, puisqu'elle était identique à la règle 5 et donc facile à implémenter. La règle 7 était définitivement la plus difficile puisque la décomposition et recomposition de \textit{Snode} était très complexe. En effet, c'est seulement avec un \textit{pattern match} extrêmement complexe que nous avons réussi à avoir tous les éléments nécessaires à l'implémentation de cette règle. En plus de cela, deux fonctions auxiliaires manipulant des tableaux de \textit{Sexp} ont été nécessaires pour décomposer et recomposer les \textit{Sexps} de manière à ce que ce soit compréhensible pour le reste de \textit{s2l}. Après beaucoup de fausses victoires causées par des tests échoués, nous avons finalement réussis à implémenter cette règle qui était définitivement la partie la plus difficile du TP.
+    
+\end{itemize}
+
+% CHECK
+
+\section{\underline{Fonction check}}
+
+\subsection{Première étape : Compréhension}
+
+Pour la fonction \textit{check} on devait comprendre quels \textit{Lexp} et quels types envoyer à la fonction. On a trouvé que (en plus de \textit{Lite} qui était déjà implémenté dans le code fourni) seulement les variables \textit{Lid} et les lambdas \textit{Labs} avaient besoin de \textit{check} puisque ce sont les seuls moments où l'utilisateur doit faire une déclaration de type (même si pour les \textit{Lid} et les \textit{Lite} cela n'était pas toujours nécessaire). Une fois que nous avions compris cela, nous avons pu commencer à implémenter les différents cas de la fonction.
+
+
+\subsection{Deuxième étape : Code}
+ 
+\begin{itemize}
+    \item \textbf{Lid} : Le cas des variables était assez simple. On a seulement vérifié à l'aide de \textit{mlookup} que la variable déclarée par l'utilisateur avait bien le même type dans l'environnement.
+    \item \textbf{Labs} : Les lambdas étaient la partie la plus difficile de \textit{check}. On a vraiment passé du temps à penser à comment implémenter ce pattern. Le plus difficile pour nous était de comprendre comment réaliser le \textit{pattern matching} de la fonction. Après avoir compris que nous devions tout d'abord ajouter tous les arguments avec leurs types à l'environnement et ensuite synthétiser le corps de la lambda avec le nouvel environnement, on a implémenté deux cas de \textit{pattern matching} pour gérer les deux opérations à faire. 
+\end{itemize}
+
+
+
+% SYNTH
+
+\section{\underline{Fonction synth}}
+
+\subsection{Première étape : Compréhension}
+
+La fonction \textit{synth} nous a semblé plus compliquée à implémenter que \textit{check}. De même que pour \textit{check}, on devait comprendre quels \textit{Lexp} envoyer à la fonction. Après avoir compris que en réalité tous les \textit{Lexp}, sauf les lambdas, avaient besoin d'*etre synthétisées puisque on n'avait pas la déclaration de type fournie par l'utilisateur. Une fois que nous avions compris cela, nous avons pu commencer à implémenter les différents cas de la fonction.
+
+\subsection{Deuxième étape : Code}
+
+\begin{itemize}
+    \item \textbf{Llit} : Aucune difficulté, on savait que tout \textit{Llit} était de type \textit{Tint}.
+    \item \textbf{Lmkref} : Nous avions compris assez rapidement qu'on devait synthétiser l'expression qu'on voulait référencier dans la mémoire. De plus, avec la compréhension du code, on savait que si la synthétisation ne soulevait aucune erreur (liste vide), on devait seulement récupérer le type de l'expression (premier élément du tuple renvoyé par la synthétisation de l'expression) et le mettre avec le type d'une référence qui est \textit{Tref}. 
+    \item \textbf{Lderef} : Une fois qu'on a réussi \textit{Lmkref}, \textit{Lderef} a été très simple puisqu'on a utilisé la même logique. On s'assure qu'on essaie bien de faire un \textit{get!} sur un type \textit{Tref} et non sur un autre type.
+    \item \textbf{Lassign} : Ce \textit{Lexp} était un peu plus difficile que les précédents puisque, même si on savait bien qu'on devait utiliser un peu la même méthode que pour \textit{Lmkref} et \textit{Lderef}, on devait aussi vérifier que le type de la référence actuelle était le même que le type que la nouvelle expression qu'on voulait assigner. Une fois qu'on a compris qu'on devait synthétiser le nom de la variable pour avoir son type et appeler \textit{check} avec la nouvelle expression avec le type de la variable (trouvé avec la synthétisation), on a utilisé la même méthode qu'avant. On s'assure aussi qu'on essaie bien de faire un \textit{set!} sur un type \textit{Tref} et non sur un autre type.
+    \item \textbf{Lite} : Encore pas trop de difficultés, on a compris qu'on devait utiliser la même méthode : on synthétise l'expression du "then" et ensuite, s'il n'y a pas d'erreurs, on récupère son type. On a vu qu'on devait seulement synthétiser la première expression puisqu'on a besoin de seulement un des deux types pour ensuite le passer en argument à \textit{check} pour qu'il puisse vérifier que les deux expressions sont du même type et que la condition est bien de type \textbf{Tbool}.
+    \item \textbf{Lfuncall} : Le premier que nous avons fait après \textit{Llit}. C'était un des plus long à faire car nous devions comprendre la logique de la fonction pour la première fois. À l'aide de plusieurs variables et de 3 fonctions auxiliaires, on va chercher le type de la fonction dans l'environnement et on vérifie que tous les arguments donnés sont du bon type. Si c'est le cas, on renvoie le type de retour de la fonction. Nous avons découvert avec ce pattern que nous devions toujours synthétiser quelque choses peu importe le pattern donné à synth. Ainsi, nous avons eu l'idée de concaténer les erreurs et de regarder si il y en a. Si oui, on retourne le type attendu et si il n'y en a pas, on retourne \textit{Tunknown} avec un message d'erreur qui décrit dans quel \textit{Lexp} l'erreur s'est produite.
+    \item \textbf{Ldec} : Le plus difficile était de comprendre qu'on devait rajouter la nouvelle variable avec son type dans l'environnement pour ensuite synthétiser l'expression finale. Une fois cela compris, nous avons réussi sans trop de mal à implémenter ce cas à l'aide de plusieurs variables auxiliaires.
+    \item \textbf{Lrec} : De loin le cas le plus difficile de \textit{synth}. Nous devions utiliser encore une fois l'évaluation "\textit{lazy}" de Haskell pour créer des définitions de types récursives pour la synthétisation avec l'environnement final. Heureusement, c'était beaucoup plus facile que pour le TP1 puisque nous avions la solution pour \textit{letrec} de la fonction \textbf{eval}. La difficulté était donc de changer la fonction passé à \textbf{foldl} pour qu'elle s'occupe des erreurs et non du \textit{LState}. On vérifie si les déclarations ont soulevés des erreurs: si c'est le cas, on le signale et on retourne un \textit{Tunknown}. Une fois cela fait, on devait simplement synthétiser la dernière expression avec le nouvel environnement. Si cette synthétisation ne produit pas d'erreur, on retourne simplement le type de l'expression finale et le tour est joué!
+\end{itemize}
+
+\subsection{Fonctions auxiliaires :}
+
+\begin{itemize}
+    \item \textbf{addErrors} : Permet de concaténer les erreurs tout en conservant une liste vide s'il n'y en a aucune. Nous aide principalement avec le \textit{pattern matching} pour savoir si on a une erreur. La concaténation de \textit{[String]} en \textit{String} ne faisait pas exactement ce que l'on voulait donc cette fonction nous permet d'afficher les erreurs en beauté.
+\end{itemize}
+
+\end{document}

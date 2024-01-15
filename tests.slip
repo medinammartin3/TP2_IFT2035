@@ -1,0 +1,33 @@
+;Auteurs:
+;Martin Medina (20235219)
+;Etienne Mitchell-Bouchard (20243430)
+
+; Test 1: get! sur un autre type que Tabs
+(begin (get! 0) (get! true) (get! +))
+
+; Test 2: set! d'un Tint sur un Tbool
+(let x (ref! 1) (set! x 2) (set! x true))
+
+; Test 3: Déclaration d'une λ sans déclaration de type
+((λ (x y) (+ x y)) 1 2)
+
+; Test 4: Passage d'un argument du mauvais type à une fonction
+(+ true +)
+
+; Test 5: if avec des expressions de types différentes
+(if true 1 <)
+
+; Test 6: Déclaration d'une λ avec le type d'un argument invalide
+(: (λ (x y) (if x (+ y 1) (- y 1))) (Int Int -> Int))
+
+; Test 7: Déclaration d'une λ avec le type de retour invalide
+(: (λ (x) (> x 1)) (Int -> Int))
+
+; Test 8: Mauvaise déclaration de type
+(: 1 Bool)
+
+; Test 9: Déclaration invalide dans un letrec
+(letrec ((x (: + Int))) (x 1 2))
+
+; Test 10: Expression finale invalide dans un letrec
+(letrec ((x (: + (Int Int -> Int)))) (x 1 2) (x 1 true))
