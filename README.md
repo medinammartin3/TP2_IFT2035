@@ -24,7 +24,7 @@ Implementation of part of a functional programming language interpreter (similar
 
 1. Open the Terminal.
 2. Locate the downloaded project.
-3. Type `gchci` to starts GHC’s interactive environment. 
+3. Type `ghci` to starts GHC’s interactive environment. 
 4. Type `run "examples.slip"` to execute the examples file.
 5. You'll see the example functions' return values in your terminal.
 
@@ -105,7 +105,7 @@ Implémentation d‘une partie d’un interpréteur d’un langage de programmat
 
 1. Ouvrez la console de votre ordinateur.
 2. Localisez le projet téléchargé.
-3. Écrivez `gchci` pour démarrer l'environnement intéractif GHC.
+3. Écrivez `ghci` pour démarrer l'environnement intéractif GHC.
 4. Écrivez `run "examples.slip"` pour exécuter le fichier d'exemples.
 5. Vous verrez les valeurs de retours des fonctions d'exemple s'afficher dans votre console.
 
