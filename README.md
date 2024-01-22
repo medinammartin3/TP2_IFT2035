@@ -4,6 +4,8 @@
 
 # Functional language interpreter
 
+***Date :** Fall 2023*
+
 ## Description
 
 Implementation of part of a functional programming language interpreter (similar to Lisp) named **Slip**.  
@@ -84,6 +86,8 @@ ___
 <br>
 
 # Interpréteur de language fonctionnel
+
+***Date :** Automne 2023*
 
 ## Description
 
