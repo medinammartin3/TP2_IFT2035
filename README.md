@@ -42,7 +42,7 @@ If you want to create your own functions, make sure you respect the syntax of th
     τ ::= Int                 Integer type
         | Bool                Bool type 
         | (τ1 ... τn → τ )    Function type 
-        | (Ref τ )            Ref-cell tyoe 
+        | (Ref τ )            Ref-cell type 
 
     e ::= n                                 Decimal signed integer 
         | x                                 Variable 
